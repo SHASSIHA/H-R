@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>إنهاء خدمة - Shassiha HR</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:'Cairo',sans-serif;
+}
+
+body{
+    background:#f4f6f9;
+    color:#222;
+}
+
+.header{
+    background:#c62828;
+    color:white;
+    padding:18px 25px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.header h1{
+    font-size:22px;
+}
+
+.header a{
+    color:white;
+    text-decoration:none;
+}
+
+.container{
+    max-width:900px;
+    margin:25px auto;
+    padding:0 15px;
+}
+
+.warning{
+    background:#fff0f0;
+    border:1px solid #ffcaca;
+    color:#a51f1f;
+    padding:15px;
+    border-radius:12px;
+    margin-bottom:20px;
+}
+
+.card{
+    background:white;
+    border-radius:18px;
+    padding:25px;
+    box-shadow:0 2px 10px rgba(0,0,0,.07);
+}
+
+.title{
+    font-size:20px;
+    font-weight:bold;
+    margin-bottom:20px;
+    padding-bottom:12px;
+    border-bottom:1px solid #eee;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:18px;
+}
+
+.full{
+    grid-column:1 / -1;
+}
+
+.field{
+    display:flex;
+    flex-direction:column;
+}
+
+label{
+    font-size:13px;
+    color:#666;
+    margin-bottom:6px;
+    font-weight:bold;
+}
+
+input,
+select,
+textarea{
+    width:100%;
+    padding:12px;
+    border:1px solid #ddd;
+    border-radius:10px;
+    font-size:14px;
+    outline:none;
+}
+
+textarea{
+    min-height:110px;
+    resize:vertical;
+}
+
+.employee-info{
+    display:none;
+    background:#fff5f5;
+    border:1px solid #ffd0d0;
+    border-radius:12px;
+    padding:15px;
+    margin-top:20px;
+    line-height:2;
+}
+
+.employee-info strong{
+    color:#c62828;
+}
+
+.actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:25px;
+}
+
+.btn{
+    border:none;
+    border-radius:10px;
+    padding:12px 22px;
+    cursor:pointer;
+    font-size:14px;
+}
+
+.save{
+    background:#c62828;
+    color:white;
+}
+
+.print{
+    background:#2878d0;
+    color:white;
+    display:none;
+}
+
+.back{
+    background:#333;
+    color:white;
+}
+
+.message{
+    display:none;
+    padding:13px;
+    border-radius:10px;
+    margin-bottom:20px;
+    text-align:center;
+    font-weight:bold;
+}
+
+.success{
+    display:block;
+    background:#e7f7ed;
+    color:#16833b;
+}
+
+.error{
+    display:block;
+    background:#ffe5e5;
+    color:#c62828;
+}
+
+
+/* =========================
+   منطقة الطباعة
+========================= */
+
+.print-area{
+    display:none;
+}
+
+@media print{
+
+    body{
+        background:white;
+    }
+
+    .header,
+    .container{
+        display:none !important;
+    }
+
+    .print-area{
+        display:block !important;
+        padding:45px 60px;
+    }
+
+    .print-header{
+        text-align:center;
+        margin-bottom:35px;
+        line-height:2;
+    }
+
+    .print-header h1{
+        font-size:24px;
+    }
+
+    .print-title{
+        text-align:center;
+        font-size:25px;
+        font-weight:bold;
+        text-decoration:underline;
+        margin:35px 0;
+    }
+
+    .print-body{
+        font-size:17px;
+        line-height:2.5;
+    }
+
+    .print-body p{
+        margin-bottom:20px;
+    }
+
+    .print-footer{
+        margin-top:70px;
+        text-align:left;
+        line-height:2.2;
+    }
+
+}
+
+@media(max-width:700px){
+
+    .grid{
+        grid-template-columns:1fr;
+    }
+
+    .full{
+        grid-column:auto;
+    }
+
+    .header{
+        flex-direction:column;
+        gap:8px;
+    }
+
+    .btn{
+        width:100%;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<div class="header">
+
+    <h1>🔴 إنهاء خدمة موظف</h1>
+
+    <a href="transactions.html">
+        ← العودة للمعاملات
+    </a>
+
+</div>
+
+
+<div class="container">
+
+    <div class="warning">
+
+        ⚠️ <strong>تنبيه:</strong>
+
+        بعد تأكيد إنهاء الخدمة سيتم تسجيل المعاملة
+        وتغيير حالة الموظف إلى
+        <strong>منتهي الخدمة</strong>.
+
+    </div>
+
+
+    <div id="message" class="message"></div>
+
+
+    <div class="card">
+
+        <div class="title">
+            🔴 تسجيل إنهاء الخدمة
+        </div>
+
+
+        <div class="grid">
+
+
+            <!-- الموظف -->
+
+            <div class="field full">
+
+                <label>الموظف *</label>
+
+                <select id="employee">
+
+                    <option value="">
+                        جاري تحميل الموظفين...
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- التاريخ -->
+
+            <div class="field">
+
+                <label>
+                    تاريخ إنهاء الخدمة *
+                </label>
+
+                <input
+                    type="date"
+                    id="endDate">
+
+            </div>
+
+
+            <!-- رقم الكتاب -->
+
+            <div class="field">
+
+                <label>
+                    رقم كتاب إنهاء الخدمة
+                </label>
+
+                <input
+                    type="text"
+                    id="bookNumber"
+                    placeholder="مثلاً: 25">
+
+            </div>
+
+
+            <!-- السبب -->
+
+            <div class="field full">
+
+                <label>
+                    سبب إنهاء الخدمة *
+                </label>
+
+                <select id="reason">
+
+                    <option value="">
+                        اختر السبب
+                    </option>
+
+                    <option value="استقالة">
+                        استقالة
+                    </option>
+
+                    <option value="انتهاء العقد">
+                        انتهاء العقد
+                    </option>
+
+                    <option value="فصل">
+                        فصل
+                    </option>
+
+                    <option value="ترك العمل">
+                        ترك العمل
+                    </option>
+
+                    <option value="أسباب أخرى">
+                        أسباب أخرى
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- الملاحظات -->
+
+            <div class="field full">
+
+                <label>
+                    الملاحظات
+                </label>
+
+                <textarea
+                    id="notes"
+                    placeholder="اكتب الملاحظات..."></textarea>
+
+            </div>
+
+        </div>
+
+
+        <!-- معلومات الموظف -->
+
+        <div
+            id="employeeInfo"
+            class="employee-info">
+        </div>
+
+
+        <!-- الأزرار -->
+
+        <div class="actions">
+
+            <button
+                id="saveBtn"
+                class="btn save"
+                onclick="saveEnd()">
+
+                🔴 تأكيد إنهاء الخدمة
+
+            </button>
+
+
+            <button
+                id="printBtn"
+                class="btn print"
+                onclick="printEnd()">
+
+                🖨️ طباعة كتاب الإنهاء
+
+            </button>
+
+
+            <button
+                class="btn back"
+                onclick="location.href='transactions.html'">
+
+                ← رجوع
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     كتاب الطباعة
+========================= -->
+
+<div
+    id="printArea"
+    class="print-area">
+
+
+    <div class="print-header">
+
+        <h1>
+            اسم الشركة / المطعم
+        </h1>
+
+        <div>
+            إدارة الموارد البشرية
+        </div>
+
+    </div>
+
+
+    <div class="print-title">
+
+        كتاب إنهاء خدمة
+
+    </div>
+
+
+    <div
+        id="printBody"
+        class="print-body">
+    </div>
+
+
+    <div class="print-footer">
+
+        مسؤول الموارد البشرية
+
+        <br>
+
+        الاسم: __________________
+
+        <br>
+
+        التوقيع: ________________
+
+        <br>
+
+        الختم: __________________
+
+    </div>
+
+
+</div>
+
+
+
+<script>
+
+
+/* =========================
+   API
+========================= */
+
+const API =
+"https://script.google.com/macros/s/AKfycbw6pnqbRn3VyJvFjk0RGfEt8VXdBkOq2uqooSvxi0onjcUStpJ_hOGNZVPLimRA-ZNAGQ/exec";
+
+
+let employees = [];
+
+let selectedEmployee = null;
+
+
+/* =========================
+   تحميل الموظفين
+========================= */
+
+async function loadEmployees(){
+
+    const select =
+        document.getElementById("employee");
+
+    try{
+
+        const response =
+            await fetch(API,{
+                method:"POST",
+                body:JSON.stringify({
+                    action:"getEmployees"
+                })
+            });
+
+
+        const data =
+            await response.json();
+
+
+        if(data.status !== "success"){
+
+            throw new Error(
+                data.message ||
+                "فشل تحميل الموظفين"
+            );
+
+        }
+
+
+        employees =
+            data.employees || [];
+
+
+        select.innerHTML = `
+            <option value="">
+                اختر الموظف
+            </option>
+        `;
+
+
+        employees.forEach(e => {
+
+            if(
+                e["الحالة"] ===
+                "منتهي الخدمة"
+            ){
+
+                return;
+
+            }
+
+
+            const option =
+                document.createElement("option");
+
+
+            option.value =
+                e["Employee ID"];
+
+
+            option.textContent =
+                e["الاسم"] +
+                " — " +
+                e["Employee ID"];
+
+
+            select.appendChild(option);
+
+        });
+
+
+    }
+    catch(error){
+
+        select.innerHTML = `
+            <option>
+                ❌ تعذر تحميل الموظفين
+            </option>
+        `;
+
+
+        showMessage(
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =========================
+   اختيار الموظف
+========================= */
+
+document
+.getElementById("employee")
+.addEventListener(
+    "change",
+    function(){
+
+        const id =
+            this.value;
+
+
+        selectedEmployee =
+            employees.find(
+                e =>
+                String(
+                    e["Employee ID"]
+                ) === String(id)
+            );
+
+
+        const box =
+            document.getElementById(
+                "employeeInfo"
+            );
+
+
+        if(!selectedEmployee){
+
+            box.style.display =
+                "none";
+
+            return;
+
+        }
+
+
+        box.style.display =
+            "block";
+
+
+        box.innerHTML = `
+
+            <strong>
+                ${safe(
+                    selectedEmployee["الاسم"]
+                )}
+            </strong>
+
+            <br>
+
+            الوظيفة:
+            ${safe(
+                selectedEmployee["الوظيفة"]
+            )}
+
+            <br>
+
+            القسم:
+            ${safe(
+                selectedEmployee["القسم"]
+            )}
+
+            <br>
+
+            الهاتف:
+            ${safe(
+                selectedEmployee["الهاتف"]
+            )}
+
+            <br>
+
+            الراتب:
+            ${safe(
+                selectedEmployee["الراتب"]
+            )}
+
+            <br>
+
+            رقم الموظف:
+            ${safe(
+                selectedEmployee["Employee ID"]
+            )}
+
+        `;
+
+    }
+);
+
+
+/* =========================
+   حفظ إنهاء الخدمة
+========================= */
+
+async function saveEnd(){
+
+    if(!selectedEmployee){
+
+        showMessage(
+            "❌ يرجى اختيار الموظف",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const endDate =
+        document.getElementById(
+            "endDate"
+        ).value;
+
+
+    if(!endDate){
+
+        showMessage(
+            "❌ يرجى اختيار تاريخ الإنهاء",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const reason =
+        document.getElementById(
+            "reason"
+        ).value;
+
+
+    if(!reason){
+
+        showMessage(
+            "❌ يرجى اختيار سبب الإنهاء",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if(
+        !confirm(
+            "⚠️ هل أنت متأكد من إنهاء خدمة:\n\n" +
+            selectedEmployee["الاسم"] +
+            "\n\nسيتم تغيير حالته إلى منتهي الخدمة."
+        )
+    ){
+
+        return;
+
+    }
+
+
+    const saveBtn =
+        document.getElementById(
+            "saveBtn"
+        );
+
+
+    saveBtn.disabled =
+        true;
+
+
+    saveBtn.innerText =
+        "⏳ جاري الحفظ...";
+
+
+    try{
+
+
+        /* =====================
+           تسجيل المعاملة
+        ===================== */
+
+        const r1 =
+            await fetch(API,{
+
+                method:"POST",
+
+                body:JSON.stringify({
+
+                    action:
+                        "addTransaction",
+
+                    employeeId:
+                        selectedEmployee[
+                            "Employee ID"
+                        ],
+
+                    employeeName:
+                        selectedEmployee[
+                            "الاسم"
+                        ],
+
+                    type:
+                        "إنهاء خدمة",
+
+                    date:
+                        endDate,
+
+                    bookNumber:
+                        document.getElementById(
+                            "bookNumber"
+                        ).value,
+
+                    reason:
+                        reason,
+
+                    notes:
+                        document.getElementById(
+                            "notes"
+                        ).value
+
+                })
+
+            });
+
+
+        const d1 =
+            await r1.json();
+
+
+        if(d1.status !== "success"){
+
+            throw new Error(
+                d1.message ||
+                "فشل تسجيل المعاملة"
+            );
+
+        }
+
+
+        /* =====================
+           تغيير حالة الموظف
+        ===================== */
+
+        const r2 =
+            await fetch(API,{
+
+                method:"POST",
+
+                body:JSON.stringify({
+
+                    action:
+                        "updateEmployeeStatus",
+
+                    employeeId:
+                        selectedEmployee[
+                            "Employee ID"
+                        ],
+
+                    status:
+                        "منتهي الخدمة"
+
+                })
+
+            });
+
+
+        const d2 =
+            await r2.json();
+
+
+        if(d2.status !== "success"){
+
+            throw new Error(
+                d2.message ||
+                "فشل تحديث حالة الموظف"
+            );
+
+        }
+
+
+        /* =====================
+           نجاح
+        ===================== */
+
+        showMessage(
+            "✅ تم إنهاء خدمة الموظف بنجاح",
+            "success"
+        );
+
+
+        createPrint();
+
+
+        /* إظهار زر الطباعة */
+
+        document.getElementById(
+            "printBtn"
+        ).style.display =
+            "inline-block";
+
+
+        saveBtn.innerText =
+            "✅ تم إنهاء الخدمة";
+
+
+    }
+    catch(error){
+
+        showMessage(
+            "❌ " + error.message,
+            "error"
+        );
+
+
+        saveBtn.disabled =
+            false;
+
+
+        saveBtn.innerText =
+            "🔴 تأكيد إنهاء الخدمة";
+
+    }
+
+}
+
+
+/* =========================
+   إنشاء كتاب الإنهاء
+========================= */
+
+function createPrint(){
+
+    if(!selectedEmployee)
+        return;
+
+
+    const endDate =
+        document.getElementById(
+            "endDate"
+        ).value;
+
+
+    const reason =
+        document.getElementById(
+            "reason"
+        ).value;
+
+
+    const bookNumber =
+        document.getElementById(
+            "bookNumber"
+        ).value;
+
+
+    const notes =
+        document.getElementById(
+            "notes"
+        ).value;
+
+
+    document.getElementById(
+        "printBody"
+    ).innerHTML = `
+
+
+        <div style="
+            text-align:left;
+            margin-bottom:30px;
+        ">
+
+            العدد:
+            ${safe(
+                bookNumber ||
+                "........"
+            )}
+
+            <br>
+
+            التاريخ:
+            ${formatDate(endDate)}
+
+        </div>
+
+
+        <p>
+            إلى / إدارة الشركة المحترمة
+        </p>
+
+
+        <p>
+            م / إنهاء خدمة موظف
+        </p>
+
+
+        <p>
+            تحية طيبة...
+        </p>
+
+
+        <p>
+
+            نود إعلامكم بأنه قد تقرر إنهاء
+            خدمة الموظف
+
+            <strong>
+                ${safe(
+                    selectedEmployee["الاسم"]
+                )}
+            </strong>
+
+            صاحب الرقم الوظيفي
+
+            <strong>
+                ${safe(
+                    selectedEmployee["Employee ID"]
+                )}
+            </strong>
+
+            والذي يشغل وظيفة
+
+            <strong>
+                ${safe(
+                    selectedEmployee["الوظيفة"]
+                )}
+            </strong>
+
+            في قسم
+
+            <strong>
+                ${safe(
+                    selectedEmployee["القسم"]
+                )}
+            </strong>
+
+            وذلك اعتباراً من تاريخ
+
+            <strong>
+                ${formatDate(endDate)}
+            </strong>.
+
+        </p>
+
+
+        <p>
+
+            سبب إنهاء الخدمة:
+
+            <strong>
+                ${safe(reason)}
+            </strong>
+
+        </p>
+
+
+        ${
+            notes
+            ?
+            `
+            <p>
+                الملاحظات:
+                ${safe(notes)}
+            </p>
+            `
+            :
+            ""
+        }
+
+
+        <p>
+
+            يرجى اتخاذ ما يلزم من إجراءات
+            أصولية وإنهاء كافة المتعلقات
+            الخاصة بالموظف.
+
+        </p>
+
+
+        <p>
+            مع التقدير...
+        </p>
+
+    `;
+
+}
+
+
+/* =========================
+   الطباعة
+========================= */
+
+function printEnd(){
+
+    createPrint();
+
+    window.print();
+
+}
+
+
+/* =========================
+   الرسائل
+========================= */
+
+function showMessage(
+    text,
+    type
+){
+
+    const box =
+        document.getElementById(
+            "message"
+        );
+
+
+    box.innerHTML =
+        safe(text);
+
+
+    box.className =
+        "message " +
+        type;
+
+}
+
+
+/* =========================
+   التاريخ
+========================= */
+
+function formatDate(value){
+
+    if(!value)
+        return "-";
+
+
+    const d =
+        new Date(value);
+
+
+    if(isNaN(d.getTime()))
+        return value;
+
+
+    return d.toLocaleDateString(
+        "en-GB"
+    );
+
+}
+
+
+/* =========================
+   حماية
+========================= */
+
+function safe(value){
+
+    if(
+        value === null ||
+        value === undefined
+    ){
+
+        return "";
+
+    }
+
+
+    return String(value)
+
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================
+   تشغيل
+========================= */
+
+loadEmployees();
+
+
+document.getElementById(
+    "endDate"
+).value =
+    new Date()
+    .toISOString()
+    .split("T")[0];
+
+
+</script>
+
+</body>
+
+</html>
