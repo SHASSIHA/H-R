@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>إدارة الموظفين - Shassiha HR</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:'Cairo',sans-serif;
+}
+
+body{
+    background:#f4f6f9;
+    color:#222;
+}
+
+.header{
+    background:#ff7a00;
+    color:white;
+    padding:18px 25px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow:0 3px 10px rgba(0,0,0,.12);
+}
+
+.header h1{
+    font-size:22px;
+}
+
+.header a{
+    color:white;
+    text-decoration:none;
+    font-size:14px;
+}
+
+.container{
+    max-width:1200px;
+    margin:25px auto;
+    padding:0 15px;
+}
+
+.toolbar{
+    background:white;
+    border-radius:16px;
+    padding:18px;
+    margin-bottom:20px;
+    box-shadow:0 2px 8px rgba(0,0,0,.06);
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+    align-items:center;
+}
+
+.toolbar input,
+.toolbar select{
+    padding:10px 14px;
+    border:1px solid #ddd;
+    border-radius:10px;
+    font-family:Cairo;
+    font-size:13px;
+    background:white;
+}
+
+.toolbar input{
+    flex:1;
+    min-width:200px;
+}
+
+.add-btn{
+    background:#ff7a00;
+    color:white;
+    text-decoration:none;
+    border-radius:10px;
+    padding:10px 18px;
+    font-size:13px;
+    font-weight:bold;
+}
+
+.card{
+    background:white;
+    border-radius:16px;
+    padding:20px;
+    box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+
+.table-wrap{
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:900px;
+}
+
+th,
+td{
+    padding:12px 10px;
+    border-bottom:1px solid #eee;
+    text-align:center;
+    font-size:13px;
+    white-space:nowrap;
+}
+
+th{
+    background:#fff3e6;
+    color:#8a5200;
+}
+
+.badge{
+    display:inline-block;
+    padding:5px 12px;
+    border-radius:20px;
+    font-size:11px;
+    font-weight:bold;
+}
+
+.badge-active{
+    background:#e7f7ed;
+    color:#16833b;
+}
+
+.badge-ended{
+    background:#ffe5e5;
+    color:#c62828;
+}
+
+.action-btn{
+    border:0;
+    border-radius:8px;
+    padding:7px 12px;
+    font-size:12px;
+    cursor:pointer;
+    font-family:Cairo;
+}
+
+.end-btn{
+    background:#ffe5e5;
+    color:#c62828;
+}
+
+.empty,
+.loading{
+    text-align:center;
+    padding:35px;
+    color:#888;
+}
+
+@media(max-width:700px){
+
+    .header{
+        flex-direction:column;
+        gap:8px;
+        text-align:center;
+    }
+
+    .toolbar{
+        flex-direction:column;
+        align-items:stretch;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<div class="header">
+
+    <h1>
+        👥 إدارة الموظفين
+    </h1>
+
+    <a href="index.html">
+        ← الرئيسية
+    </a>
+
+</div>
+
+
+<div class="container">
+
+
+    <div class="toolbar">
+
+        <input
+            type="text"
+            id="search"
+            placeholder="ابحث بالاسم أو الرقم الوظيفي أو القسم..."
+            oninput="renderTable()">
+
+        <select id="statusFilter" onchange="renderTable()">
+
+            <option value="">كل الحالات</option>
+            <option value="مستمر">مستمرون فقط</option>
+            <option value="منتهي الخدمة">منتهو الخدمة فقط</option>
+
+        </select>
+
+        <a class="add-btn" href="add-employee.html">
+            ➕ إضافة موظف
+        </a>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="table-wrap">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>الرقم الوظيفي</th>
+                        <th>الاسم</th>
+                        <th>رقم الهاتف</th>
+                        <th>القسم</th>
+                        <th>الوظيفة</th>
+                        <th>الراتب</th>
+                        <th>تاريخ المباشرة</th>
+                        <th>الحالة</th>
+                        <th>إجراء</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="employeesBody">
+
+                    <tr>
+                        <td colspan="9" class="loading">
+                            ⏳ جاري تحميل الموظفين...
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================================
+   API
+========================================= */
+
+const API =
+"https://script.google.com/macros/s/AKfycbw6pnqbRn3VyJvFjk0RGfEt8VXdBkOq2uqooSvxi0onjcUStpJ_hOGNZVPLimRA-ZNAGQ/exec";
+
+
+let employees = [];
+
+
+/* =========================================
+   تحميل الموظفين
+========================================= */
+
+async function loadEmployees(){
+
+    const body =
+        document.getElementById("employeesBody");
+
+    try{
+
+        const response =
+            await fetch(API,{
+                method:"POST",
+                body:JSON.stringify({action:"getEmployees"})
+            });
+
+        const data =
+            await response.json();
+
+        if(data.status !== "success"){
+            throw new Error(data.message || "فشل تحميل الموظفين");
+        }
+
+        employees = data.employees || [];
+
+        renderTable();
+
+    }
+    catch(error){
+
+        console.error(error);
+
+        body.innerHTML = `
+            <tr>
+                <td colspan="9" class="empty">
+                    ❌ ${safe(error.message)}
+                </td>
+            </tr>
+        `;
+
+    }
+
+}
+
+
+/* =========================================
+   عرض الجدول (مع فلترة وبحث)
+========================================= */
+
+function renderTable(){
+
+    const body =
+        document.getElementById("employeesBody");
+
+    const search =
+        document.getElementById("search").value.trim().toLowerCase();
+
+    const statusFilter =
+        document.getElementById("statusFilter").value;
+
+
+    let list = employees.filter(employee => {
+
+        const status =
+            String(employee["الحالة"] || "").trim();
+
+        if(statusFilter && status !== statusFilter){
+            return false;
+        }
+
+        if(search){
+
+            const text = (
+                String(employee["الاسم"] || "") + " " +
+                String(employee["Employee ID"] || "") + " " +
+                String(employee["القسم"] || "")
+            ).toLowerCase();
+
+            if(!text.includes(search)){
+                return false;
+            }
+
+        }
+
+        return true;
+
+    });
+
+
+    if(!list.length){
+
+        body.innerHTML = `
+            <tr>
+                <td colspan="9" class="empty">
+                    لا يوجد موظفون مطابقون
+                </td>
+            </tr>
+        `;
+
+        return;
+
+    }
+
+
+    body.innerHTML =
+        list.map(employee => {
+
+            const status =
+                String(employee["الحالة"] || "").trim();
+
+            const isEnded =
+                status === "منتهي الخدمة";
+
+            return `
+
+                <tr>
+
+                    <td><strong>${safe(employee["Employee ID"])}</strong></td>
+                    <td>${safe(employee["الاسم"])}</td>
+                    <td>${safe(employee["رقم الهاتف"])}</td>
+                    <td>${safe(employee["القسم"])}</td>
+                    <td>${safe(employee["الوظيفة"])}</td>
+                    <td>${money(employee["الراتب"])}</td>
+                    <td>${formatDate(employee["تاريخ المباشرة"])}</td>
+
+                    <td>
+                        <span class="badge ${isEnded ? "badge-ended" : "badge-active"}">
+                            ${safe(status || "-")}
+                        </span>
+                    </td>
+
+                    <td>
+                        ${
+                            isEnded
+                            ? "-"
+                            : `<button class="action-btn end-btn" onclick="endService('${safe(employee["Employee ID"])}','${safe(employee["الاسم"])}')">إنهاء خدمة</button>`
+                        }
+                    </td>
+
+                </tr>
+
+            `;
+
+        }).join("");
+
+}
+
+
+/* =========================================
+   إنهاء خدمة سريع من القائمة
+========================================= */
+
+async function endService(employeeId, employeeName){
+
+    const confirmed =
+        confirm(
+            "هل تريد إنهاء خدمة الموظف؟\n\n" + employeeName +
+            "\n\nملاحظة: لتسجيل كتاب إنهاء خدمة رسمي مع السبب، " +
+            "استخدم صفحة المعاملات بدلاً من هذا الزر."
+        );
+
+    if(!confirmed) return;
+
+    try{
+
+        const response =
+            await fetch(API,{
+                method:"POST",
+                body:JSON.stringify({
+                    action:"updateEmployeeStatus",
+                    employeeId: employeeId,
+                    status:"منتهي الخدمة"
+                })
+            });
+
+        const data =
+            await response.json();
+
+        if(data.status !== "success"){
+            throw new Error(data.message || "فشل تحديث الحالة");
+        }
+
+        loadEmployees();
+
+    }
+    catch(error){
+
+        alert("❌ " + error.message);
+
+    }
+
+}
+
+
+/* =========================================
+   تنسيق المال
+========================================= */
+
+function money(value){
+
+    const number =
+        Number(value || 0);
+
+    return number ? number.toLocaleString("en-US") : "-";
+
+}
+
+
+/* =========================================
+   التاريخ
+========================================= */
+
+function formatDate(value){
+
+    if(!value) return "-";
+
+    const date = new Date(value);
+
+    if(isNaN(date.getTime())){
+        return safe(value);
+    }
+
+    return date.toLocaleDateString("en-GB");
+
+}
+
+
+/* =========================================
+   حماية النص
+========================================= */
+
+function safe(value){
+
+    if(value === null || value === undefined) return "";
+
+    return String(value)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================================
+   تشغيل
+========================================= */
+
+loadEmployees();
+
+</script>
+
+</body>
+</html>
